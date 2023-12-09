@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Main</title>
+  <!-- Підключення стилів -->
+  <!--<link rel="stylesheet" type="text/css" href="/public/styles.css">
+   Підключення скрипту 
+  <link rel="shortcut icon"type="image/ico"href="/fav/favicon.ico"/>-->
+  <script src="/public/script.js"></script>
+</head>
+<body>
+  <div id="tabs">
+    <button class="tab-button active-tab" data-tab="main" onclick="showTab('main')">Main</button>
+    <button class="tab-button" data-tab="Device" onclick="showTab('Device')">Device</button>
+    <button class="tab-button" data-tab="TakeDevice" onclick="showTab('Take Device')">Take Device</button>
+    <button class="tab-button" data-tab="Register" onclick="showTab('Register')">Register</button>
+    <button class="tab-button" data-tab="Login" onclick="showTab('Login')">Login</button>
+  </div>
+  <img id="Image" style="display: none;"> <!-- <img> для відображення GIF -->
+  <h1>Add Device</h1>
+    
+    <!-- Форма для додавання пристрою -->
+    <form action="/Device" method="POST" enctype="multipart/form-data">
+        <label for="deviceName">Device Name:</label>
+        <input type="text" name="deviceName" required>
+
+        <label for="description">Description:</label>
+        <textarea name="description" rows="4"></textarea>
+
+        <label for="serialNumber">Serial Number:</label>
+        <input type="text" name="serialNumber" required>
+
+        <label for="manufacturer">Manufacturer:</label>
+        <input type="text" name="manufacturer" required>
+
+        <label for="devicePhoto">Device Photo:</label>
+        <input type="file" name="photo" accept="image/*">
+
+        <button type="submit">Add Device</button>
+    </form>
+
+    <h2>Update device</h2>
+        <label for="deviceID">Device ID:</label>
+        <input type="text" id="deviceID" required>
+        <label for="deviceName">Device Name:</label>
+        <input type="text" id="deviceNameUpdate">
+
+        <label for="description">Description:</label>
+        <textarea id="descriptionUpdate" rows="4"></textarea>
+
+        <label for="serialNumber">Serial Number:</label>
+        <input type="text" id="serialNumberUpdate">
+
+        <label for="manufacturer">Manufacturer:</label>
+        <input type="text" id="manufacturerUpdate">
+
+        <label for="devicePhoto">Device Photo:</label>
+        <input type="file" id="devicePhotoUpdate" accept="image/*">
+        <button onclick="updateDevice()">Update</button>
+      </div>
+
+      <div id="deviceList">
+        <h2>Device List</h2>
+        <ul id="devices"></ul>
+      </div>
+  <script>
+    async function updateDevice() {
+        // Отримайте значення полів форми
+        const deviceIdUpdate = document.getElementById('deviceID');
+        const deviceNameUpdate = document.getElementById('deviceNameUpdate');
+        const descriptionUpdate = document.getElementById('descriptionUpdate');
+        const serialNumberUpdate = document.getElementById('serialNumberUpdate');
+        const manufacturerdUpdate = document.getElementById('manufacturerUpdate');
+        const devicePhotoUpdate = document.getElementById('devicePhotoUpdate');
+        const deviceId = deviceIdUpdate.value;
+        const deviceName = deviceNameUpdate.value;
+        const description = descriptionUpdate.value;
+        const serialNumber = serialNumberUpdate.value;
+        const manufacturer = manufacturerdUpdate.value;
+        
+        if (!deviceId) {
+        alert('Please enter device ID');
+        return;
+        }
+        // Створіть об'єкт FormData для передачі даних форми
+        const formData = new FormData();
+        
+    if (deviceName.trim() !== '') {
+        formData.append('deviceName', deviceName);
+    }
+
+    if (description.trim() !== '') {
+        formData.append('description', description);
+    }
+
+    if (serialNumber.trim() !== '') {
+        formData.append('serialNumber', serialNumber);
+    }
+
+    if (manufacturer.trim() !== '') {
+        formData.append('manufacturer', manufacturer);
+    }
+    if (devicePhotoUpdate.files.length > 0) {
+      formData.append('devicePhoto', devicePhotoUpdate.files[0]);
+    }
+
+    try {
+      // Використайте fetch для відправки PUT-запиту
+      const response = await fetch(`/Device/${deviceId}`, {
+        method: 'PUT',
+        body: formData,
+      });
+
+      if (!response.ok) {
+        return console.log('Need ID');
+      }
+
+      // Отримайте та виведіть результат
+      const result = await response.text();
+      console.log(result);
+    } catch (error) {
+      console.error('Error updating device:', error);
+      }   
+    }
+
+    fetchDevices();
+  </script>
+</body>
+</html>
+

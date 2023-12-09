@@ -1,0 +1,111 @@
+  <!DOCTYPE html>
+  <html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Device Info</title>
+    <!-- Підключення стилів -->
+    <!--<link rel="stylesheet" type="text/css" href="/public/styles.css">
+    Підключення скрипту 
+    <link rel="shortcut icon"type="image/ico"href="/fav/favicon.ico"/>-->
+    <script src="/public/script.js"></script>
+  </head>
+  <body>
+    <div id="tabs">
+      <button class="tab-button" data-tab="main" onclick="showTab('main')">Main</button>
+      <button class="tab-button active-tab" data-tab="Device" onclick="showTab('Device')">Device</button>
+      <button class="tab-button" data-tab="TakeDevice" onclick="showTab('Take Device')">Take Device</button>
+      <button class="tab-button" data-tab="Register" onclick="showTab('Register')">Register</button>
+      <button class="tab-button" data-tab="Login" onclick="showTab('Login')">Login</button>
+    </div>
+
+    <div>
+      <label for="deviceId">Enter Device ID:</label>
+      <input type="text" id="deviceId">
+      <button onclick="getDeviceInfo()">Get Device Info</button>
+      <button onclick="deleteDevice()">Delete Device</button>
+      <!-- Виведення лише обраних полів інформації про пристрій -->
+      <p id="deviceName"></p>
+      <p id="description"></p>
+      <p id="serialNumber"></p>
+      <p id="manufacturer"></p>
+      <p id="status"></p>
+
+      <button onclick="openPhoto()">Show Device Photo</button>
+      <img id="devicePhoto" alt="Device Photo"style="display: none;">
+    </div>
+    <script>
+      
+
+  async function getDeviceInfo() {
+    const deviceId = document.getElementById('deviceId').value;
+
+    try {
+      const response = await fetch(`/Device/${deviceId}`);
+      deviceInfo = await response.json();
+
+      document.getElementById('deviceName').textContent = `Device Name: ${deviceInfo.deviceName}`;
+      document.getElementById('description').textContent = `Description: ${deviceInfo.description}`;
+      document.getElementById('serialNumber').textContent = `Serial Number: ${deviceInfo.serialNumber}`;
+      document.getElementById('manufacturer').textContent = `Manufacturer: ${deviceInfo.manufacturer}`;
+      document.getElementById('status').textContent = `Status: ${deviceInfo.status}`;
+
+      // Сховати фото при отриманні нової інформації
+      document.getElementById('devicePhoto').style.display = 'none';
+    } catch (error) {
+      console.error('Error fetching device info:', error);
+    }
+  }
+
+  function openPhoto(){
+    const deviceId = document.getElementById('deviceId').value;
+    fetch(`/device-photo/${deviceId}`)
+    .then(response => {
+      if (response.status === 404) {
+        console.error('Img not found');
+      } else if (!response.ok) {
+        console.error('Error fetching Img:', response.status);
+      } else {
+        return response.blob();
+      }
+    })
+    .then(blob => {
+      if (blob) {
+        const ImgUrl = URL.createObjectURL(blob);
+        devicePhoto.src = ImgUrl;
+        devicePhoto.style.display = 'block';
+        console.log(blob);
+      }
+    })
+    .catch(error => {
+      console.error('Error fetching Img:', error);
+    });
+  }
+
+  async function deleteDevice() {
+    const deviceId = document.getElementById('deviceId').value;
+
+    try {
+      const response = await fetch(`/Device/${deviceId}`, {
+        method: 'DELETE',
+      });
+
+      const result = await response.text();
+      console.log(result);
+
+      // Опціонально: Оновити або очистити інші елементи на сторінці, якщо потрібно
+      document.getElementById('deviceName').textContent = '';
+      document.getElementById('description').textContent = '';
+      document.getElementById('serialNumber').textContent = '';
+      document.getElementById('manufacturer').textContent = '';
+      document.getElementById('status').textContent = '';
+      document.getElementById('devicePhoto').src = '';
+      document.getElementById('devicePhoto').style.display = 'none';
+    } catch (error) {
+      console.error('Error deleting device:', error);
+    }
+  }
+    </script>
+  </body>
+  </html>
+

@@ -1,0 +1,335 @@
+openapi: 3.0.3
+info:
+  title: System of Inventarisation API
+  description: |-
+    API for working with device inventory
+  version: 1.0.0
+servers:
+  - url: http://localhost:3000
+tags:
+  - name: devices
+    description: Operations with device
+  - name: users
+    description: Operations with users
+  - name: forms
+    description: Static forms
+paths:
+  /:
+    get:
+      tags:
+        - forms
+      summary: Gets main form
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            text/html:
+              schema:
+                type: string
+  /Device:
+    get:
+      tags:
+        - forms
+      summary: Gets Device Info form
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            text/html:
+              schema:
+                type: string
+  /Take-Device:
+    get:
+      tags:
+        - forms
+      summary: Gets Take Device form
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            text/html:
+              schema:
+                type: string
+  /Register:
+    get:
+      tags:
+        - forms
+      summary: Gets Register form
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            text/html:
+              schema:
+                type: string
+  /Login:
+    get:
+      tags:
+        - forms
+      summary: Gets Login form
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            text/html:
+              schema:
+                type: string
+  /device:
+    post:
+      tags:
+        - devices
+      summary: Creates a new device
+      operationId: createDevice
+      requestBody:
+        content: 
+          multipart/form-data: 
+            schema:           
+              type: object
+              properties:
+                deviceName:
+                  type: string
+                description:
+                  type: string
+                serialNumber:
+                  type: string
+                manufacturer:
+                  type: string
+                photo:
+                  type: string
+                  format: binary
+      responses:
+        '201':
+          description: Sucessfull operation
+        '400':
+          description: Bad request
+  /devices:
+    get:
+      tags:
+        - devices
+      summary: Gets Device Info form
+      operationId: getDevices
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/devices'
+    
+  /device/{Id}:
+    get:
+      tags:
+        - devices
+      summary: Get information about a specific device
+      operationId: getDevice
+      parameters:
+        - name: Id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Sucessfull opration
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/device'
+        '404':
+          description: Device not found
+    put:
+      tags:
+        - devices
+      summary: Update information about a specific device
+      operationId: updateDevice
+      parameters:
+        - name: Id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                deviceName:
+                  type: string
+                description:
+                  type: string
+                serialNumber:
+                  type: string
+                manufacturer:
+                  type: string
+                photo:
+                  type: string
+                  format: binary
+      responses:
+        '200':
+          description: Sucessfull operation
+        '404':
+          description: Device not found
+    delete:
+      tags:
+        - devices
+      summary: Delete a specific device
+      operationId: deleteDevice
+      parameters:
+        - name: Id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Sucessfull operation
+        '404':
+          description: Device not found
+        '500':
+          description: Internal Server Error
+  /device-photo/{id}:
+    get:
+      tags:
+        - devices
+      summary: Get the photo of a specific device
+      operationId: getDevicePhoto
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            image/*:
+              schema:
+                type: string
+                format: binary
+        '404':
+          description: Device not found
+  /takeReturnDevice/{id}:
+    put:
+      tags:
+        - devices
+      summary: Take or return a device
+      operationId: takeReturnDevice
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                action:
+                  type: string
+                  enum: ['take', 'return']
+              required:
+                - action
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            text/plain:
+              schema:
+                type: string
+        '400':
+          description: Invalid action or device is already taken/returned
+        '401':
+          description: 'Unauthorized: User is not logged in'
+        '404':
+          description: Device not found
+        '500':
+          description: Internal Server Error
+  /register:
+    post:
+      tags:
+        - users
+      summary: Register a new user
+      operationId: registerUser
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                password:
+                  type: string
+              required:
+                - username
+                - password
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            text/plain:
+              schema:
+                type: string
+        '400':
+          description: User already exists
+        '500':
+          description: Internal Server Error
+
+  /login:
+    post:
+      tags:
+        - users
+      summary: Log in as a user
+      operationId: loginUser
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                password:
+                  type: string
+              required:
+                - username
+                - password
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            text/plain:
+              schema:
+                type: string
+        '401':
+          description: Invalid username or password
+        '500':
+          description: Internal Server Error
+      
+components:
+  schemas:
+    device:
+      type: object
+      properties:
+        deviceName:
+          type: string
+        description:
+          type: string
+        serialNumber:
+          type: string
+        manufacturer:
+          type: string
+        photo:
+          type: string
+    devices:
+      type: array
+      items:
+        $ref: '#/components/schemas/devices'
+            

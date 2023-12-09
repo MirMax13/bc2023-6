@@ -1,0 +1,71 @@
+  <!DOCTYPE html>
+  <html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Take or Return Device</title>
+    <!-- Підключення стилів -->
+    <!--<link rel="stylesheet" type="text/css" href="/public/styles.css">
+    Підключення скрипту 
+    <link rel="shortcut icon"type="image/ico"href="/fav/favicon.ico"/>-->
+    <script src="/public/script.js"></script>
+  </head>
+  <body>
+    <div id="tabs">
+      <button class="tab-button" data-tab="main" onclick="showTab('main')">Main</button>
+      <button class="tab-button" data-tab="Device" onclick="showTab('Device')">Device</button>
+      <button class="tab-button active-tab" data-tab="TakeDevice" onclick="showTab('Take Device')">Take Device</button>
+      <button class="tab-button active-tab" data-tab="Register" onclick="showTab('Register')">Register</button>
+      <button class="tab-button" data-tab="Login" onclick="showTab('Login')">Login</button>
+    </div>
+
+    <label for="deviceId">Enter Device ID:</label>
+    <input type="text" id="deviceId">
+    <button onclick="takeDevice()">Take Device</button>
+    <button onclick="returnDevice()">Return Device</button>  
+    <div id="deviceList">
+      <h2>Device List</h2>
+      <ul id="devices"></ul>
+    </div>
+
+    <script>
+       fetchDevices();
+
+       // Метод для взяття пристрою
+    async function takeDevice() {
+      await takeReturnDevice('take');
+    }
+
+    // Метод для повернення пристрою
+    async function returnDevice() {
+      await takeReturnDevice('return');
+    }
+
+    async function takeReturnDevice(action) {
+      const deviceId = document.getElementById('deviceId').value;
+
+      try {
+        const response = await fetch(`/takeReturnDevice/${deviceId}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ action }),
+        });
+
+        if (!response.ok) {
+          const errorMessage = await response.text();
+          console.error(`Error taking/returning device: ${errorMessage}`);
+          return;
+        }
+
+        // Оновити список пристроїв після успішного взяття/повернення
+        fetchDevices();
+      } catch (error) {
+        console.error('Error taking/returning device:', error);
+      }
+    }
+    </script>
+  </body>
+  </html>
+

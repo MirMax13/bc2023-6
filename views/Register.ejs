@@ -1,0 +1,60 @@
+  <!DOCTYPE html>
+  <html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register</title>
+    <!-- Підключення стилів -->
+    <!--<link rel="stylesheet" type="text/css" href="/public/styles.css">
+    Підключення скрипту 
+    <link rel="shortcut icon"type="image/ico"href="/fav/favicon.ico"/>-->
+    <script src="/public/script.js"></script>
+  </head>
+  <body>
+    <div id="tabs">
+      <button class="tab-button" data-tab="main" onclick="showTab('main')">Main</button>
+      <button class="tab-button" data-tab="Device" onclick="showTab('Device')">Device</button>
+      <button class="tab-button" data-tab="TakeDevice" onclick="showTab('Take Device')">Take Device</button>
+      <button class="tab-button active-tab" data-tab="Register" onclick="showTab('Register')">Register</button>
+      <button class="tab-button" data-tab="Login" onclick="showTab('Login')">Login</button>
+    </div>
+
+
+    <div>
+      <label for="username">Username:</label>
+      <input type="text" id="username" name="username" required>
+  
+      <label for="password">Password:</label>
+      <input type="password" id="password" name="password" required>
+  
+      <button onclick="registerUser()">Register</button>
+    </div>
+    
+    <script>
+       async function registerUser() {
+      const username = document.getElementById('username').value;
+      const password = document.getElementById('password').value;
+
+      try {
+        const response = await fetch('/register', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            username,
+            password,
+          }),
+        });
+
+        const result = await response.text();
+        alert(result); // Покажіть або обробіть результат реєстрації, наприклад, перенаправлення на іншу сторінку
+      } catch (error) {
+        console.error('Error registering user:', error);
+        alert('Error registering user. Please try again.');
+      }
+    }
+    </script>
+  </body>
+  </html>
+
